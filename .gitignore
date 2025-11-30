@@ -1,5 +1,33 @@
+# Paper and LaTeX files
+*.tex
+*.pdf
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+*.spl
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.toc
+*.lof
+*.lot
+sections/
+figures/*.svg
+figures/*.pdf
+figures/overview*
+figures/parallelpipeline*
+figures/example*
+references.bib
+*_SUMMARY.md
+*_CHECKLIST.md
+COMPILATION_SUMMARY.md
+IMPROVEMENTS_CHECKLIST.md
+REVISION_SUMMARY.md
 
-<parameter name="StartLine">1
+# Agents folder (paper-related)
+agents/
 
 # API Keys and Secrets
 API_Keys.txt
