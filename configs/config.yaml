@@ -1,0 +1,43 @@
+# NavLLM Configuration
+
+# LLM Settings
+llm:
+  provider: "openai"  # openai, mock
+  model: "gpt-4-turbo"
+  temperature: 0.3
+  max_retries: 2
+  # api_key: set via OPENAI_API_KEY environment variable
+
+# Recommender Settings
+recommender:
+  # Utility function weights (must sum to 1.0)
+  lambda_data: 0.4
+  lambda_pref: 0.4
+  lambda_div: 0.2
+  
+  # Candidate generation
+  candidate_budget: 30
+  min_result_rows: 3
+  
+  # Recommendations
+  top_k: 3
+  generate_explanations: true
+
+# Session Settings
+session:
+  max_history_steps: 5
+  log_dir: "logs/sessions"
+
+# Database Settings (for SQL-based cube engine)
+database:
+  type: "postgresql"  # postgresql, duckdb, pandas
+  host: "localhost"
+  port: 5432
+  database: "navllm"
+  # username/password: set via environment variables
+
+# Evaluation Settings
+evaluation:
+  similarity_threshold: 0.8
+  interaction_budget: 12
+  output_dir: "results"

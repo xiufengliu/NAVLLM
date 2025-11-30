@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "navllm"
+version = "0.1.0"
+description = "LLM-Assisted Conversational Navigation over Multidimensional Data Cubes"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "NavLLM Team", email = "navllm@example.com"}
+]
+keywords = ["olap", "data cube", "llm", "navigation", "business intelligence"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+openai = ["openai>=1.0.0"]
+postgres = ["psycopg2-binary>=2.9.0", "sqlalchemy>=2.0.0"]
+duckdb = ["duckdb>=0.9.0"]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+]
+all = ["navllm[openai,postgres,duckdb,dev]"]
+
+[project.urls]
+Homepage = "https://github.com/navllm/navllm"
+Documentation = "https://navllm.readthedocs.io"
+Repository = "https://github.com/navllm/navllm"
+
+[project.scripts]
+navllm = "navllm.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "I", "N", "W"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

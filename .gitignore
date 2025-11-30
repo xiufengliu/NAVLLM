@@ -1,0 +1,106 @@
+# Paper and LaTeX files
+*.tex
+*.pdf
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+*.spl
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.toc
+*.lof
+*.lot
+sections/
+figures/*.svg
+figures/*.pdf
+figures/overview*
+figures/parallelpipeline*
+figures/example*
+references.bib
+*_SUMMARY.md
+*_CHECKLIST.md
+COMPILATION_SUMMARY.md
+IMPROVEMENTS_CHECKLIST.md
+REVISION_SUMMARY.md
+
+# API Keys and Secrets
+API_Keys.txt
+*.key
+*.pem
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Logs
+logs/
+*.log
+
+# Results and data (selectively ignore large files)
+results/*.csv
+results/*.json
+results/*.pkl
+data/*.zip
+data/*.gz
+data/*.tar
+data/raw/
+data/processed/
+
+# Keep example data and configs
+!data/sample/
+!configs/*.yaml
+!configs/*.json
+
+# OS
+Thumbs.db
