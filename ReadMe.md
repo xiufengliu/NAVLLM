@@ -4,7 +4,7 @@
 
 NavLLM is a system for intelligent, conversational navigation over multidimensional data cubes (OLAP). It combines the analytical power of traditional OLAP engines with large language models (LLMs) to provide personalized, context-aware view recommendations during exploratory data analysis.
 
-## 🎯 Key Features
+## Key Features
 
 - **Conversational Interface**: Navigate data cubes using natural language queries
 - **Hybrid Recommendation System**: Combines three scoring components:
@@ -15,7 +15,7 @@ NavLLM is a system for intelligent, conversational navigation over multidimensio
 - **Explainable Recommendations**: Natural language explanations for each suggested view
 - **Flexible LLM Backend**: Supports OpenAI GPT-4, Google Gemini, and DeepSeek
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────┐         ┌──────────────────────┐         ┌─────────────────┐
@@ -36,7 +36,7 @@ NavLLM is a system for intelligent, conversational navigation over multidimensio
                         └──────────────────┘
 ```
 
-## 📦 Installation
+## Installation
 
 ### Prerequisites
 - Python 3.10+
@@ -73,7 +73,7 @@ NavLLM is a system for intelligent, conversational navigation over multidimensio
    # echo "OPENAI_API_KEY=your_api_key_here" > .env
    ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Example Session
 
@@ -129,7 +129,7 @@ python scripts/example_session.py --cube SalesCube --task sales_decline
 python scripts/run_experiments.py --all
 ```
 
-## 📊 Supported Cubes
+## Supported Cubes
 
 NavLLM comes with three pre-configured multidimensional cubes:
 
@@ -146,7 +146,7 @@ NavLLM comes with three pre-configured multidimensional cubes:
    - Dimensions: Time (hour→season), Location (station→region), Pollutant
    - Measures: concentration, air_quality_index
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Run unit tests
@@ -159,7 +159,7 @@ python -m pytest tests/test_cube.py -v
 python -m pytest --cov=src/navllm tests/
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 NAVLLM/
@@ -171,11 +171,10 @@ NAVLLM/
 ├── scripts/             # Experiment and data scripts
 ├── configs/             # Configuration files
 ├── data/                # Sample datasets
-├── tests/               # Unit tests
-└── agents/              # Agent implementations
+└── tests/               # Unit tests
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 Edit `configs/cubes.py` to add custom cubes or modify existing ones:
 
@@ -205,14 +204,14 @@ nav_engine = NavLLMEngine(
 )
 ```
 
-## 📈 Performance
+## Performance
 
 On benchmark cubes with 24 participants:
 - **24% higher cumulative interestingness** vs. LLM-only baselines
 - **56% reduction in redundant exploration** vs. purely data-driven heuristics
 - **38% higher usefulness ratings** (5.8/7 vs. 4.2/7) compared to manual navigation
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please follow these steps:
 
@@ -222,17 +221,17 @@ Contributions are welcome! Please follow these steps:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📧 Contact
+## Contact
 
 Xiufeng Liu - xiuli@dtu.dk
 
 Project Link: [https://github.com/xiufengliu/NAVLLM](https://github.com/xiufengliu/NAVLLM)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - M5 Forecasting Competition for the retail sales dataset
 - PostgreSQL and FastAPI communities
