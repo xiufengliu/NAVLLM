@@ -1,238 +1,130 @@
 # NavLLM
 
-**Conversational OLAP navigation powered by LLMs - combining data interestingness with user preferences**
+NavLLM is a system for LLM-assisted conversational navigation over multidimensional data cubes. It helps analysts explore OLAP cubes more effectively by combining data-driven interestingness with natural language understanding.
 
-NavLLM is a system for intelligent, conversational navigation over multidimensional data cubes (OLAP). It combines the analytical power of traditional OLAP engines with large language models (LLMs) to provide personalized, context-aware view recommendations during exploratory data analysis.
+## Overview
 
-## Key Features
+When exploring data cubes, analysts often struggle to decide which drill-down or slice operation to perform next. NavLLM addresses this by recommending the most promising views based on:
 
-- **Conversational Interface**: Navigate data cubes using natural language queries
-- **Hybrid Recommendation System**: Combines three scoring components:
-  - **Data-driven interestingness**: Statistical deviation detection and anomaly scoring
-  - **Preference-based relevance**: LLM-powered understanding of user intent from conversation history
-  - **Diversity-aware selection**: Graph-based scoring to avoid redundant views
-- **Verifiable Computations**: All numerical analysis performed by conventional OLAP engine, not the LLM
-- **Explainable Recommendations**: Natural language explanations for each suggested view
-- **Flexible LLM Backend**: Supports OpenAI GPT-4, Google Gemini, and DeepSeek
+- **Data interestingness**: Statistical measures like deviation from parent aggregates
+- **User preferences**: Understanding what the analyst is looking for from conversation context  
+- **Exploration diversity**: Avoiding redundant views that show similar information
 
-## Architecture
-
-```
-┌─────────────┐         ┌──────────────────────┐         ┌─────────────────┐
-│             │         │  LLM Navigation      │         │                 │
-│  Analyst    │◄────────│      Engine          │◄────────│  Cube Engine    │
-│             │         │                      │         │   (PostgreSQL)  │
-└─────────────┘         │  • Candidate Gen     │         │                 │
-                        │  • Preference Scorer │         │  • Star Schema  │
-   Convers. Interface   │  • Diversity Scorer  │         │  • View Mater.  │
-                        │  • Utility Ranker    │         │  • Stats Calc.  │
-                        │  • Explan. Generator │         │                 │
-                        └──────────────────────┘         └─────────────────┘
-                                  │
-                                  ▼
-                        ┌──────────────────┐
-                        │  External LLM API│
-                        │  (DeepSeek/GPT)  │
-                        └──────────────────┘
-```
+The key design principle is that the LLM handles semantic understanding (interpreting user intent, generating explanations) while a conventional cube engine handles all numerical computations. This keeps results verifiable and avoids hallucination issues.
 
 ## Installation
 
-### Prerequisites
-- Python 3.10+
-- PostgreSQL 15+
-- Git
+```bash
+git clone https://github.com/xiufengliu/NAVLLM.git
+cd NAVLLM
+pip install -e .
+```
 
-### Setup
-
-1. **Clone the repository:**
-   ```bash
-   git clone git@github.com:xiufengliu/NAVLLM.git
-   cd NAVLLM
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   pip install -e .
-   ```
-
-3. **Set up PostgreSQL:**
-   ```bash
-   # Create database
-   createdb navllm_db
-   
-   # Run schema setup (if provided)
-   psql navllm_db < configs/schema.sql
-   ```
-
-4. **Configure LLM API:**
-   Create a `.env` file with your API key:
-   ```bash
-   echo "DEEPSEEK_API_KEY=your_api_key_here" > .env
-   # Or use OpenAI/Gemini:
-   # echo "OPENAI_API_KEY=your_api_key_here" > .env
-   ```
+Set up your LLM API key:
+```bash
+export DEEPSEEK_API_KEY=your_key_here
+# or
+export OPENAI_API_KEY=your_key_here
+```
 
 ## Quick Start
 
-### Example Session
-
 ```python
-from navllm import NavLLMEngine
-from navllm.cube import CubeEngine
+from navllm.cube import PandasCubeEngine
+from navllm.nav import NavLLMRecommender
 
-# Initialize engines
-cube_engine = CubeEngine(db_uri="postgresql://localhost/navllm_db")
-nav_engine = NavLLMEngine(
-    cube_engine=cube_engine,
-    llm_backend="deepseek",  # or "openai", "gemini"
-    weights={
-        "data": 0.4,
-        "pref": 0.4,
-        "div": 0.2
+# Load your cube
+engine = PandasCubeEngine.from_csv(
+    fact_path="data/processed/m5/fact_sales.csv",
+    dim_paths={
+        "Time": "data/processed/m5/dim_time.csv",
+        "Product": "data/processed/m5/dim_product.csv",
+        "Store": "data/processed/m5/dim_store.csv"
     }
 )
 
-# Start from overview
-current_view = cube_engine.get_overview("SalesCube")
-
-# User utterance
-utterance = "Show me where sales dropped in 2023"
-
-# Get recommendations
-recommendations = nav_engine.recommend_next_views(
-    current_view=current_view,
-    utterance=utterance,
-    top_k=5
+# Create recommender
+recommender = NavLLMRecommender(
+    cube_engine=engine,
+    weights={"data": 0.4, "pref": 0.4, "div": 0.2}
 )
 
-# Display recommendations with explanations
-for i, rec in enumerate(recommendations, 1):
-    print(f"\n{i}. {rec['view_description']}")
-    print(f"   Utility Score: {rec['utility']:.2f}")
-    print(f"   Explanation: {rec['explanation']}")
+# Get recommendations
+recs = recommender.recommend(
+    current_view=engine.get_overview(),
+    utterance="Show me where sales are declining",
+    top_k=3
+)
+
+for rec in recs:
+    print(f"{rec.description}: {rec.explanation}")
 ```
 
-### Running Experiments
+## Datasets
 
+The repository includes three cubes for experiments:
+
+| Cube | Domain | Dimensions | Measures | Rows |
+|------|--------|------------|----------|------|
+| SalesCube | Retail | Time, Product, Store | units, revenue | ~1M |
+| ManufacturingCube | Operations | Time, Line, Product | throughput, defects | ~394K |
+| AirQualityCube | Environment | Time, Location, Pollutant | concentration, AQI | ~2.5M |
+
+Download and preprocess:
 ```bash
-# Download sample datasets
 python scripts/download_data.py
-
-# Preprocess data
-python scripts/preprocess_data.py --cube SalesCube
-
-# Run example session
-python scripts/example_session.py --cube SalesCube --task sales_decline
-
-# Run full experiments
-python scripts/run_experiments.py --all
+python scripts/preprocess_data.py
 ```
 
-## Supported Cubes
-
-NavLLM comes with three pre-configured multidimensional cubes:
-
-1. **SalesCube** (Retail)
-   - Dimensions: Time (day→year), Product (item→category), Store (store→state)
-   - Measures: units_sold, revenue
-   - Source: M5 Forecasting dataset (Walmart sales)
-
-2. **ManufacturingCube** (Operations)
-   - Dimensions: Time (shift→month), Line (machine→plant), Product (variant→category)
-   - Measures: throughput, defect_count, defect_rate
-
-3. **AirQualityCube** (Environmental)
-   - Dimensions: Time (hour→season), Location (station→region), Pollutant
-   - Measures: concentration, air_quality_index
-
-## Testing
+## Running Experiments
 
 ```bash
-# Run unit tests
-python -m pytest tests/
+# Run main experiments
+python scripts/run_experiments.py
 
-# Run specific test
-python -m pytest tests/test_cube.py -v
+# Run ablation study
+python scripts/run_ablation_sensitivity.py
 
-# Run with coverage
-python -m pytest --cov=src/navllm tests/
+# Generate result tables
+python scripts/generate_paper_tables.py
 ```
 
 ## Project Structure
 
 ```
-NAVLLM/
-├── src/navllm/          # Core library
-│   ├── cube/            # OLAP cube engine
-│   ├── llm/             # LLM integration
-│   ├── api/             # API endpoints
-│   └── eval/            # Evaluation metrics
-├── scripts/             # Experiment and data scripts
-├── configs/             # Configuration files
-├── data/                # Sample datasets
-└── tests/               # Unit tests
+navllm/
+├── src/navllm/
+│   ├── cube/       # Cube engine, views, actions
+│   ├── llm/        # LLM client and preference scorer
+│   ├── nav/        # Navigation session and recommender
+│   └── eval/       # Evaluation metrics
+├── scripts/        # Experiment scripts
+├── configs/        # Cube configurations and tasks
+├── data/           # Datasets (after download)
+└── tests/          # Unit tests
 ```
 
 ## Configuration
 
-Edit `configs/cubes.py` to add custom cubes or modify existing ones:
+Utility function weights can be tuned based on your needs:
 
-```python
-CUBES = {
-    "YourCube": {
-        "dimensions": [
-            {"name": "Time", "levels": ["day", "month", "year"]},
-            {"name": "Region", "levels": ["city", "state", "country"]},
-        ],
-        "measures": ["sales", "profit"],
-        "db_table": "your_fact_table"
-    }
-}
-```
+- Higher `data` weight → more focus on statistical anomalies
+- Higher `pref` weight → more focus on user's stated goals
+- Higher `div` weight → broader exploration, less redundancy
 
-Adjust utility function weights in your engine initialization:
+Default weights (0.4, 0.4, 0.2) work well for most cases.
 
-```python
-nav_engine = NavLLMEngine(
-    cube_engine=cube_engine,
-    weights={
-        "data": 0.5,    # Increase for more data-driven recommendations
-        "pref": 0.3,    # Increase for more preference alignment
-        "div": 0.2      # Increase for more diverse exploration
-    }
-)
-```
+## Requirements
 
-## Performance
-
-On benchmark cubes with 24 participants:
-- **24% higher cumulative interestingness** vs. LLM-only baselines
-- **56% reduction in redundant exploration** vs. purely data-driven heuristics
-- **38% higher usefulness ratings** (5.8/7 vs. 4.2/7) compared to manual navigation
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+- Python 3.10+
+- pandas, numpy
+- openai or deepseek SDK
+- See `pyproject.toml` for full list
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License
 
 ## Contact
 
 Xiufeng Liu - xiuli@dtu.dk
-
-Project Link: [https://github.com/xiufengliu/NAVLLM](https://github.com/xiufengliu/NAVLLM)
-
-## Acknowledgments
-
-- M5 Forecasting Competition for the retail sales dataset
-- PostgreSQL and FastAPI communities
-- LLM API providers (DeepSeek, OpenAI, Google)

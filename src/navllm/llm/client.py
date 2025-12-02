@@ -236,8 +236,75 @@ class GeminiClient(LLMClient):
             return {}
 
 
-class MockLLMClient(LLMClient):
-    """Mock LLM client for testing without API calls."""
+class OllamaClient(LLMClient):
+    """Ollama local LLM client - much faster than API calls."""
+    
+    def __init__(self, model: str = "deepseek-r1:8b", 
+                 base_url: str = "http://localhost:11434",
+                 temperature: float = 0.3, max_retries: int = 2):
+        self.model = model
+        self.base_url = base_url
+        self.temperature = temperature
+        self.max_retries = max_retries
+    
+    def complete(self, prompt: str, **kwargs) -> LLMResponse:
+        import requests
+        
+        for attempt in range(self.max_retries + 1):
+            try:
+                resp = requests.post(
+                    f"{self.base_url}/api/generate",
+                    json={
+                        "model": self.model,
+                        "prompt": prompt,
+                        "stream": False,
+                        "options": {
+                            "temperature": kwargs.get("temperature", self.temperature),
+                            "num_predict": kwargs.get("max_tokens", 500),
+                        }
+                    },
+                    timeout=120
+                )
+                resp.raise_for_status()
+                data = resp.json()
+                content = data.get("response", "")
+                return LLMResponse(content=content, raw_response=data, success=True)
+            except Exception as e:
+                logger.warning(f"Ollama call failed (attempt {attempt + 1}): {e}")
+                if attempt == self.max_retries:
+                    return LLMResponse(content="", raw_response=None, success=False, error=str(e))
+        return LLMResponse(content="", raw_response=None, success=False, error="Max retries exceeded")
+    
+    def complete_json(self, prompt: str, **kwargs) -> Dict[str, Any]:
+        response = self.complete(prompt, **kwargs)
+        if not response.success:
+            logger.error(f"Ollama call failed: {response.error}")
+            return {}
+        try:
+            content = response.content.strip()
+            # Extract JSON from response
+            if "```json" in content:
+                content = content.split("```json")[1].split("```")[0]
+            elif "```" in content:
+                content = content.split("```")[1].split("```")[0]
+            # Find JSON object
+            start = content.find("{")
+            end = content.rfind("}") + 1
+            if start >= 0 and end > start:
+                content = content[start:end]
+            return json.loads(content.strip())
+        except json.JSONDecodeError as e:
+            logger.warning(f"Failed to parse JSON: {e}, content: {response.content[:200]}")
+            # Try to extract scores manually
+            import re
+            scores = re.findall(r'0\.\d+', response.content)
+            if scores:
+                return {"scores": [float(s) for s in scores[:10]]}
+            return {"scores": [0.5, 0.5, 0.5]}
+
+
+class TestLLMClient(LLMClient):
+    """Test LLM client for testing without API calls."""
     
     def __init__(self, default_scores: List[float] = None, simulate_preferences: bool = True):
         self.default_scores = default_scores or [0.5]
@@ -247,7 +314,7 @@ class MockLLMClient(LLMClient):
     def complete(self, prompt: str, **kwargs) -> LLMResponse:
         self.call_count += 1
         return LLMResponse(
-            content="Mock response",
+            content="Test response",
             raw_response=None,
             success=True
         )

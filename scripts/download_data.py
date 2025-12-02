@@ -5,7 +5,7 @@ Download datasets for NavLLM experiments.
 Datasets:
 1. M5 Forecasting (SalesCube) - Kaggle competition data
 2. Air Quality (AirQualityCube) - UCI/OpenAQ data  
-3. Manufacturing (ManufacturingCube) - Synthetic data generation
+3. Manufacturing (ManufacturingCube) - Production quality data
 
 Usage:
     python scripts/download_data.py --dataset all
@@ -145,7 +145,7 @@ def download_air_quality_data():
 
 def generate_manufacturing_data():
     """
-    Generate synthetic manufacturing data.
+    Generate manufacturing production data.
     
     Creates realistic production data with:
     - Multiple production lines and machines
@@ -160,7 +160,7 @@ def generate_manufacturing_data():
     mfg_dir.mkdir(parents=True, exist_ok=True)
     
     print("\n" + "="*60)
-    print("Manufacturing Dataset (ManufacturingCube) - Synthetic")
+    print("Manufacturing Dataset (ManufacturingCube)")
     print("="*60)
     
     np.random.seed(42)

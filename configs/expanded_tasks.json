@@ -1,0 +1,208 @@
+{
+  "tasks": [
+    {
+      "task_id": "sales_decline_1",
+      "cube_name": "m5",
+      "description": "Find which product categories had declining sales in 2023",
+      "target_measure": "revenue",
+      "analysis_type": "trend_analysis",
+      "target_views": [
+        {"levels": {"Time": "year", "Product": "category", "Store": "All"}}
+      ]
+    },
+    {
+      "task_id": "sales_decline_2",
+      "cube_name": "m5",
+      "description": "Identify states where revenue dropped in Q4 2023",
+      "target_measure": "revenue",
+      "analysis_type": "trend_analysis",
+      "target_views": [
+        {"levels": {"Time": "quarter", "Product": "All", "Store": "state"}}
+      ]
+    },
+    {
+      "task_id": "sales_outlier_1",
+      "cube_name": "m5",
+      "description": "Find stores with unusually high or low sales compared to their state average",
+      "target_measure": "revenue",
+      "analysis_type": "outlier_detection",
+      "target_views": [
+        {"levels": {"Time": "All", "Product": "All", "Store": "store"}}
+      ]
+    },
+    {
+      "task_id": "sales_comparison_1",
+      "cube_name": "m5",
+      "description": "Compare sales performance of Foods vs Hobbies categories across states",
+      "target_measure": "revenue",
+      "analysis_type": "comparison",
+      "target_views": [
+        {"levels": {"Time": "All", "Product": "category", "Store": "state"}}
+      ]
+    },
+    {
+      "task_id": "sales_drilldown_1",
+      "cube_name": "m5",
+      "description": "Investigate which specific items in Foods category are driving California sales",
+      "target_measure": "revenue",
+      "analysis_type": "drill_down",
+      "target_views": [
+        {"levels": {"Time": "All", "Product": "item", "Store": "state"},
+         "filters": [{"dimension": "Store", "level": "state", "operator": "=", "value": "CA"}]}
+      ]
+    },
+    {
+      "task_id": "sales_seasonal_1",
+      "cube_name": "m5",
+      "description": "Identify seasonal patterns in Household category sales",
+      "target_measure": "units_sold",
+      "analysis_type": "trend_analysis",
+      "target_views": [
+        {"levels": {"Time": "month", "Product": "category", "Store": "All"}}
+      ]
+    },
+    {
+      "task_id": "sales_topk_1",
+      "cube_name": "m5",
+      "description": "Find top 5 performing stores and understand what makes them successful",
+      "target_measure": "revenue",
+      "analysis_type": "drill_down",
+      "target_views": [
+        {"levels": {"Time": "quarter", "Product": "category", "Store": "store"}}
+      ]
+    },
+    {
+      "task_id": "sales_multidim_1",
+      "cube_name": "m5",
+      "description": "Find combinations of time period, category, and state with highest growth",
+      "target_measure": "revenue",
+      "analysis_type": "multi_dimensional",
+      "target_views": [
+        {"levels": {"Time": "quarter", "Product": "category", "Store": "state"}}
+      ]
+    },
+    {
+      "task_id": "mfg_defect_1",
+      "cube_name": "manufacturing",
+      "description": "Find which production lines have consistently high defect rates",
+      "target_measure": "defect_rate",
+      "analysis_type": "outlier_detection",
+      "target_views": [
+        {"levels": {"Time": "month", "Line": "line", "Product": "All"}}
+      ]
+    },
+    {
+      "task_id": "mfg_defect_2",
+      "cube_name": "manufacturing",
+      "description": "Identify shift-line combinations with elevated defects",
+      "target_measure": "defect_rate",
+      "analysis_type": "drill_down",
+      "target_views": [
+        {"levels": {"Time": "shift", "Line": "line", "Product": "All"}}
+      ]
+    },
+    {
+      "task_id": "mfg_throughput_1",
+      "cube_name": "manufacturing",
+      "description": "Find product families with highest throughput variability",
+      "target_measure": "throughput",
+      "analysis_type": "outlier_detection",
+      "target_views": [
+        {"levels": {"Time": "week", "Line": "All", "Product": "family"}}
+      ]
+    },
+    {
+      "task_id": "mfg_comparison_1",
+      "cube_name": "manufacturing",
+      "description": "Compare defect rates across different plants",
+      "target_measure": "defect_rate",
+      "analysis_type": "comparison",
+      "target_views": [
+        {"levels": {"Time": "month", "Line": "plant", "Product": "All"}}
+      ]
+    },
+    {
+      "task_id": "mfg_trend_1",
+      "cube_name": "manufacturing",
+      "description": "Identify if defect rates are improving or worsening over time",
+      "target_measure": "defect_rate",
+      "analysis_type": "trend_analysis",
+      "target_views": [
+        {"levels": {"Time": "month", "Line": "All", "Product": "All"}}
+      ]
+    },
+    {
+      "task_id": "mfg_drilldown_1",
+      "cube_name": "manufacturing",
+      "description": "Investigate which specific machines in Line A have quality issues",
+      "target_measure": "defect_rate",
+      "analysis_type": "drill_down",
+      "target_views": [
+        {"levels": {"Time": "day", "Line": "machine", "Product": "All"}}
+      ]
+    },
+    {
+      "task_id": "aq_pm25_1",
+      "cube_name": "air_quality",
+      "description": "Find districts with highest PM2.5 concentrations",
+      "target_measure": "concentration",
+      "analysis_type": "outlier_detection",
+      "target_views": [
+        {"levels": {"Time": "All", "Location": "district", "Pollutant": "pollutant"},
+         "filters": [{"dimension": "Pollutant", "level": "pollutant", "operator": "=", "value": "PM2.5"}]}
+      ]
+    },
+    {
+      "task_id": "aq_temporal_1",
+      "cube_name": "air_quality",
+      "description": "Investigate temporal patterns of high PM2.5 episodes",
+      "target_measure": "concentration",
+      "analysis_type": "trend_analysis",
+      "target_views": [
+        {"levels": {"Time": "month", "Location": "city", "Pollutant": "pollutant"},
+         "filters": [{"dimension": "Pollutant", "level": "pollutant", "operator": "=", "value": "PM2.5"}]}
+      ]
+    },
+    {
+      "task_id": "aq_comparison_1",
+      "cube_name": "air_quality",
+      "description": "Compare air quality across different cities to identify pollution hotspots",
+      "target_measure": "concentration",
+      "analysis_type": "comparison",
+      "target_views": [
+        {"levels": {"Time": "season", "Location": "city", "Pollutant": "All"}}
+      ]
+    },
+    {
+      "task_id": "aq_seasonal_1",
+      "cube_name": "air_quality",
+      "description": "Identify seasonal patterns in ozone levels",
+      "target_measure": "concentration",
+      "analysis_type": "trend_analysis",
+      "target_views": [
+        {"levels": {"Time": "season", "Location": "All", "Pollutant": "pollutant"},
+         "filters": [{"dimension": "Pollutant", "level": "pollutant", "operator": "=", "value": "O3"}]}
+      ]
+    },
+    {
+      "task_id": "aq_drilldown_1",
+      "cube_name": "air_quality",
+      "description": "Investigate which specific stations in downtown area have worst air quality",
+      "target_measure": "concentration",
+      "analysis_type": "drill_down",
+      "target_views": [
+        {"levels": {"Time": "month", "Location": "station", "Pollutant": "All"}}
+      ]
+    },
+    {
+      "task_id": "aq_multidim_1",
+      "cube_name": "air_quality",
+      "description": "Find combinations of time, location, and pollutant with highest concentrations",
+      "target_measure": "concentration",
+      "analysis_type": "multi_dimensional",
+      "target_views": [
+        {"levels": {"Time": "month", "Location": "district", "Pollutant": "pollutant"}}
+      ]
+    }
+  ]
+}

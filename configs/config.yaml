@@ -2,7 +2,7 @@
 
 # LLM Settings
 llm:
-  provider: "openai"  # openai, mock
+  provider: "openai"  # openai, test
   model: "gpt-4-turbo"
   temperature: 0.3
   max_retries: 2
