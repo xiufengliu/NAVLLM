@@ -19,7 +19,7 @@ from navllm.nav.session import Session
 from navllm.nav.recommender import NavLLMRecommender, RecommenderConfig
 from baseline_methods import HeuristicNav, SeeDBNav, GreedyBestNav, BFSNav, RandomNav
 
-API_KEY = "sk-0f250dd04a4b446cb08b17a40a11519d"
+API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 DATA_DIR = Path(__file__).parent.parent / "data" / "processed"
 RESULTS_DIR = Path(__file__).parent.parent / "results"
 CONFIG_DIR = Path(__file__).parent.parent / "configs"
